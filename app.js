@@ -17,6 +17,23 @@ var uiController = (function () {
     getDOMstrings: function () {
       return DOMstrings;
     },
+    addListItem: function (item, type) {
+      var html, list;
+      if (type === "inc") {
+        html =
+          '<div class="item clearfix" id="income-%id%"><div class="item__description">%%description%%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+        list = document.querySelector(".income__list");
+      } else {
+        html =
+          '<div class="item clearfix" id="expense-%id%"><div class="item__description">%%description%%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+        list = document.querySelector(".expenses__list");
+      }
+      html = html.replace("%id%", item.id);
+      html = html.replace("%%description%%", item.description);
+      html = html.replace("%value%", item.value);
+
+      list.insertAdjacentHTML("beforeend", html);
+    },
   };
 })();
 
@@ -58,22 +75,25 @@ var financeController = (function () {
         item = new Expense(id, desc, val);
       }
       data.items[type].push(item);
-    },
-    data: function () {
-      return data;
+      return item;
     },
   };
 })();
 
 // programmiig holboh controller
 var appController = (function (uiController, financeController) {
-  var DOM = uiController.getDOMstrings();
-  var input = uiController.getInput();
   var ctrlAddItem = function () {
-    financeController.addItem(input.type, input.description, input.value);
+    var input = uiController.getInput();
+    var item = financeController.addItem(
+      input.type,
+      input.description,
+      input.value,
+    );
+    uiController.addListItem(item, input.type);
   };
 
   var setupEventListeners = function () {
+    var DOM = uiController.getDOMstrings();
     document.querySelector(DOM.inputBtn).addEventListener("click", function () {
       ctrlAddItem();
     });
