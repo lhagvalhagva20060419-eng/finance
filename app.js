@@ -3,7 +3,7 @@ var uiController = (function () {
   var DOMstrings = {
     inputType: ".add__type",
     inputDescription: ".add__description",
-    inputValue: ".add_value",
+    inputValue: ".add__value",
     inputBtn: ".add__btn",
   };
   return {
@@ -35,7 +35,7 @@ var financeController = (function () {
   };
 
   var data = {
-    allItems: {
+    items: {
       inc: [],
       exp: [],
     },
@@ -45,20 +45,42 @@ var financeController = (function () {
       exp: 0,
     },
   };
+
+  return {
+    addItem: function (type, desc, val) {
+      var item, id;
+      if (data.items[type].length === 0) id = 1;
+      else id = data.items[type][data.items[type].length - 1].id + 1;
+
+      if (type === "inc") {
+        item = new Income(id, desc, val);
+      } else {
+        item = new Expense(id, desc, val);
+      }
+      data.items[type].push(item);
+    },
+    data: function () {
+      return data;
+    },
+  };
 })();
 
 // programmiig holboh controller
 var appController = (function (uiController, financeController) {
   var DOM = uiController.getDOMstrings();
-  var ctrlAddItem = function () {};
+  var input = uiController.getInput();
+  var ctrlAddItem = function () {
+    financeController.addItem(input.type, input.description, input.value);
+  };
 
   var setupEventListeners = function () {
-    document
-      .querySelector(DOM.inputBtn)
-      .addEventListener("click", function () {});
+    document.querySelector(DOM.inputBtn).addEventListener("click", function () {
+      ctrlAddItem();
+    });
 
     document.addEventListener("keypress", function (event) {
       if (event.key === "Enter") {
+        ctrlAddItem();
       }
     });
   };
